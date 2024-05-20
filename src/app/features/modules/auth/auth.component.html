@@ -1,0 +1,25 @@
+<ng-container *ngIf="isRegister; else login">
+  register
+  <ng-container *ngTemplateOutlet="form; context: { $implicit: registerSubmit }"></ng-container>
+</ng-container>
+
+<ng-template #login>
+  login
+  <ng-container *ngTemplateOutlet="form; context: { $implicit: loginSubmit }"></ng-container>
+</ng-template>
+
+<ng-template #form let-formSubmit>
+  <form [formGroup]="authLoginForm" (ngSubmit)="formSubmit()">
+    <div>
+      <label for="email">Email</label>
+      <input formControlName="email" id="email" type="email" />
+    </div>
+    <div>
+      <label for="password">Password</label>
+      <input formControlName="password" id="password" />
+    </div>
+    <div>
+      <button type="submit">Log In</button>
+    </div>
+  </form>
+</ng-template>
