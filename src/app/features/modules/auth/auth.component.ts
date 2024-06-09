@@ -1,52 +1,56 @@
-import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '@core/config/environment/environment';
-import { markControlAsTouchedAndValidate } from '@core/common/utils/forms';
-import { AuthLoginForm } from '@modules/auth/forms/auth-login.form';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { tap } from 'rxjs';
-import { StorageService } from '@core/services/storage';
 import { InjectTokens } from '@core/config';
 import { LocaleStorageService } from '@core/services/storage/strategies';
+import { AuthForm } from '@modules/auth/form/auth.form';
+import { markControlAsTouchedAndValidate } from '@core/common/utils/forms';
+import { AuthService } from '@modules/auth/auth.service';
+import { AuthRequest } from '@modules/auth/interfaces/auth.interface';
+import { handleResponseErrorWithToastr } from '@core/common/utils/errors';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-auth',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  providers: [{ provide: InjectTokens.STORAGE_PROVIDER, useClass: LocaleStorageService }],
+  providers: [AuthService, { provide: InjectTokens.STORAGE_PROVIDER, useClass: LocaleStorageService }],
   templateUrl: './auth.component.html',
   styleUrl: './auth.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AuthComponent implements OnInit {
-  public readonly authLoginForm = new AuthLoginForm();
+export class AuthComponent {
+  @Input() public isRegistration: boolean = false;
+
+  public readonly authForm = new AuthForm();
 
   constructor(
-    private readonly http: HttpClient,
-    @Inject(InjectTokens.STORAGE_PROVIDER) private readonly storageService: StorageService,
+    private readonly authService: AuthService,
+    private readonly toastrService: ToastrService,
   ) {}
 
-  public isRegister: boolean = false;
-
-  public loginSubmit() {
-    if (this.authLoginForm.valid) {
-      this.http
-        .post<{ accessToken: string }>(environment.apiUrl + 'auth/login', {
-          ...this.authLoginForm.value,
-        })
-        .pipe(
-          tap((result) => {
-            this.storageService.setItem('token', result.accessToken);
-          }),
-        )
-        .subscribe();
+  public submit(isRegistration: boolean) {
+    if (this.authForm.valid) {
+      const preparedFormData = this.authForm.getRawValue();
+      if (isRegistration) {
+        this.register(preparedFormData);
+      } else {
+        this.login(preparedFormData);
+      }
     } else {
-      markControlAsTouchedAndValidate(this.authLoginForm);
+      markControlAsTouchedAndValidate(this.authForm);
     }
   }
 
-  public registerSubmit() {}
+  private register(data: AuthRequest): void {
+    this.authService.register(data).subscribe({
+      error: (error) => handleResponseErrorWithToastr(error, this.toastrService),
+    });
+  }
 
-  ngOnInit(): void {}
+  private login(data: AuthRequest): void {
+    this.authService.login(data).subscribe({
+      error: (error) => handleResponseErrorWithToastr(error, this.toastrService),
+    });
+  }
 }
