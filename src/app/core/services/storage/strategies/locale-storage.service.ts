@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import { StorageProvider } from '../interfaces';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class LocaleStorageService implements StorageProvider {
   constructor() {}
 

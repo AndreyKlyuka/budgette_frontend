@@ -1,8 +1,8 @@
 import { ReactiveFormsModule } from '@angular/forms';
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InjectTokens } from '@core/config';
-import { LocaleStorageService } from '@core/services/storage/strategies';
+import { SessionStorageService } from '@core/services/storage/strategies';
 import { AuthForm } from '@modules/auth/form/auth.form';
 import { markControlAsTouchedAndValidate } from '@core/common/utils/forms';
 import { AuthService } from '@modules/auth/auth.service';
@@ -14,14 +14,12 @@ import { ToastrService } from 'ngx-toastr';
   selector: 'app-auth',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  providers: [AuthService, { provide: InjectTokens.STORAGE_PROVIDER, useClass: LocaleStorageService }],
+  providers: [],
   templateUrl: './auth.component.html',
   styleUrl: './auth.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AuthComponent {
-  @Input() public isRegistration: boolean = false;
-
   public readonly authForm = new AuthForm();
 
   constructor(
@@ -29,28 +27,28 @@ export class AuthComponent {
     private readonly toastrService: ToastrService,
   ) {}
 
-  public submit(isRegistration: boolean) {
-    if (this.authForm.valid) {
-      const preparedFormData = this.authForm.getRawValue();
-      if (isRegistration) {
-        this.register(preparedFormData);
-      } else {
-        this.login(preparedFormData);
-      }
-    } else {
+  public submit() {
+    if (this.authForm.invalid) {
       markControlAsTouchedAndValidate(this.authForm);
+    } else {
+      this.login(this.authForm.getRawValue());
     }
-  }
-
-  private register(data: AuthRequest): void {
-    this.authService.register(data).subscribe({
-      error: (error) => handleResponseErrorWithToastr(error, this.toastrService),
-    });
   }
 
   private login(data: AuthRequest): void {
     this.authService.login(data).subscribe({
-      error: (error) => handleResponseErrorWithToastr(error, this.toastrService),
+      next: (next) => {
+        this.toastrService.success('Successfully logged in');
+      },
+      error: (error) => handleResponseErrorWithToastr(this.toastrService, error),
+    });
+  }
+
+  public logout() {
+    this.authService.logout().subscribe({
+      next: () => {
+        this.toastrService.success('Successfully logged out');
+      },
     });
   }
 }

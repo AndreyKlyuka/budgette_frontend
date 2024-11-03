@@ -1,19 +1,13 @@
-<div>
-  {{ isRegistration ? 'register' : 'login' }}
-  <ng-container *ngTemplateOutlet="form"></ng-container>
-</div>
-<ng-template #form>
-  <form [formGroup]="authForm" (ngSubmit)="submit(isRegistration)">
-    <div>
-      <label for="email">Email</label>
-      <input formControlName="email" id="email" type="email" />
-    </div>
-    <div>
-      <label for="password">Password</label>
-      <input formControlName="password" id="password" />
-    </div>
-    <div>
-      <button type="submit">{{ isRegistration ? 'Register' : 'Login' }}</button>
-    </div>
-  </form>
-</ng-template>
+<form [formGroup]="authForm" (ngSubmit)="submit()">
+  <div>
+    <label for="email">Email</label>
+    <input formControlName="email" id="email" type="email" />
+  </div>
+  <div>
+    <label for="password">Password</label>
+    <input formControlName="password" id="password" />
+  </div>
+  <div>
+    <button type="submit">Login</button>
+  </div>
+</form>

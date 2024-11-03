@@ -9,7 +9,11 @@ export class AuthForm extends FormGroup<FormGroupDef<AuthRequest>> {
       email: new FormControl('', { nonNullable: true }),
       password: new FormControl('', { nonNullable: true }),
     });
-    this.controls.email.addValidators([Validators.required]);
-    this.controls.password.addValidators([Validators.required, Validators.min(AuthConstants.MIN_PASSWORD_LENGTH)]);
+
+    this.controls.email.addValidators([Validators.required, Validators.email]);
+    this.controls.password.addValidators([
+      Validators.required,
+      Validators.minLength(AuthConstants.MIN_PASSWORD_LENGTH),
+    ]);
   }
 }
