@@ -1,8 +1,6 @@
 import { ReactiveFormsModule } from '@angular/forms';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { InjectTokens } from '@core/config';
-import { SessionStorageService } from '@core/services/storage/strategies';
 import { AuthForm } from '@modules/auth/form/auth.form';
 import { markControlAsTouchedAndValidate } from '@core/common/utils/forms';
 import { AuthService } from '@modules/auth/auth.service';
@@ -22,10 +20,7 @@ import { ToastrService } from 'ngx-toastr';
 export class AuthComponent {
   public readonly authForm = new AuthForm();
 
-  constructor(
-    private readonly authService: AuthService,
-    private readonly toastrService: ToastrService,
-  ) {}
+  constructor(private readonly authService: AuthService, private readonly toastrService: ToastrService) {}
 
   public submit() {
     if (this.authForm.invalid) {

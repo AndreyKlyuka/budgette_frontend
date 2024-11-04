@@ -1,4 +1,4 @@
-import { Inject, Injectable, OnInit } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { InjectTokens } from '@core/config';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { AuthRequest, AuthResponce } from '@modules/auth/interfaces/auth.interface';

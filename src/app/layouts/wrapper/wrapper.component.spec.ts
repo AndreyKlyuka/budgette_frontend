@@ -8,10 +8,9 @@ describe('WrapperComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [WrapperComponent]
-    })
-    .compileComponents();
-    
+      imports: [WrapperComponent],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(WrapperComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
